@@ -65,7 +65,7 @@
   <LanguageList version="1.0"/>
   <PlatformList version="1.0"/>
   <Group environment="value:FGLPROFILE=../etc/fglprofile" id="75644415" label="Group" language="Genero">
-    <Package binaryName="db_connect" dependencies="18736,1660809348,-1599902779" id="989152717" label="db_connect" platform="Genero Application Server">
+    <Package binaryName="db_connect" dependencies="18736,1660809348,-1599902779,-1098528042" id="989152717" label="db_connect" platform="Genero Application Server">
       <DynamicProperty name="packageId" value="db_connect"/>
       <DynamicProperty name="packageLabel" value="db_connect"/>
       <Directory excludedFiles="Test.42r" includedFiles="*.42?" label="Binaries" sourceDirectory="$(ProjectDir)/bin"/>
@@ -82,5 +82,8 @@
     <Library binaryName="gas" id="1660809348" label="gas">
       <File filePath="gas/db_connect.xcf"/>
     </Library>
+    <Application binaryName="simple" id="-1098528042" label="simple">
+      <File filePath="src/simple.4gl"/>
+    </Application>
   </Group>
 </Project>

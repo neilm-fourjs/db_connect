@@ -92,6 +92,9 @@ END FUNCTION
 ----------------------------------------------------------------------------------------------------
 FUNCTION testConnection1( l_con t_con ) RETURNS STRING
 	TRY
+		DISCONNECT CURRENT
+	CATCH END TRY
+	TRY
 		LET l_con.res = SFMT("Trying: DATABASE '%1'", l_con.con)
 		DATABASE l_con.con
 		LET l_con.res = l_con.res.append("\nSuccess\n"||get_User(l_con.*) )
@@ -103,9 +106,12 @@ END FUNCTION
 ----------------------------------------------------------------------------------------------------
 FUNCTION testConnection2( l_con t_con ) RETURNS STRING
 	TRY
+		DISCONNECT CURRENT
+	CATCH END TRY
+	TRY
 		IF l_con.usr IS NOT NULL THEN
-			LET l_con.res = SFMT("Trying: CONNECT TO '%1' AS '%2' USING '%3'",l_con.dbn, l_con.usr, l_con.psw)
-			CONNECT TO l_con.dbn AS l_con.usr USING l_con.psw
+			LET l_con.res = SFMT("Trying: CONNECT TO '%1' USER '%2' USING '%3'",l_con.dbn, l_con.usr, l_con.psw)
+			CONNECT TO l_con.dbn USER l_con.usr USING l_con.psw
 		ELSE
 			LET l_con.res = SFMT("Trying: CONNECT TO '%1'",l_con.dbn)
 			CONNECT TO l_con.dbn
@@ -121,6 +127,7 @@ FUNCTION get_User( l_con t_con ) RETURNS STRING
 	DEFINE l_usr, l_sql STRING
 	CASE l_con.drv.subString(4,6)
 		WHEN "ifx" LET l_sql = "SELECT USER FROM systables WHERE tabname = 'systables'"
+		WHEN "sqt" LET l_sql = "select sqlite_version()" -- doesn't have concept of user?
 		OTHERWISE LET l_sql = "SELECT USER"
 	END CASE
 	TRY
