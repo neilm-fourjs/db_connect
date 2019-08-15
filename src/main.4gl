@@ -49,7 +49,7 @@ MAIN
 END MAIN
 ----------------------------------------------------------------------------------------------------
 -- "stores+driver='dbmora',source='orcl',resource='myconfig'"
-FUNCTION setConnection( l_con t_con )
+FUNCTION setConnection( l_con t_con ) RETURNS STRING
 	DEFINE l_env STRING
 	LET l_con.con = SFMT("%1",l_con.dbn)
 	IF l_con.drv IS NOT NULL THEN
@@ -90,18 +90,18 @@ FUNCTION setConnection( l_con t_con )
 	RETURN l_con.con
 END FUNCTION
 ----------------------------------------------------------------------------------------------------
-FUNCTION testConnection1( l_con t_con )
+FUNCTION testConnection1( l_con t_con ) RETURNS STRING
 	TRY
 		LET l_con.res = SFMT("Trying: DATABASE '%1'", l_con.con)
 		DATABASE l_con.con
-		LET l_con.res = l_con.res.append("\nSuccess")
+		LET l_con.res = l_con.res.append("\nSuccess\n"||get_User(l_con.*) )
 	CATCH
 		LET l_con.res = l_con.res.append("\n"||STATUS||":"||SQLERRMESSAGE)
 	END TRY
 	RETURN l_con.res
 END FUNCTION
 ----------------------------------------------------------------------------------------------------
-FUNCTION testConnection2( l_con t_con )
+FUNCTION testConnection2( l_con t_con ) RETURNS STRING
 	TRY
 		IF l_con.usr IS NOT NULL THEN
 			LET l_con.res = SFMT("Trying: CONNECT TO '%1' AS '%2' USING '%3'",l_con.dbn, l_con.usr, l_con.psw)
@@ -110,14 +110,33 @@ FUNCTION testConnection2( l_con t_con )
 			LET l_con.res = SFMT("Trying: CONNECT TO '%1'",l_con.dbn)
 			CONNECT TO l_con.dbn
 		END IF
-		LET l_con.res = l_con.res.append("\nSuccess")
+		LET l_con.res = l_con.res.append("\nSuccess\n"||get_User(l_con.*) )
 	CATCH
 		LET l_con.res = l_con.res.append("\n"||STATUS||":"||SQLERRMESSAGE)
 	END TRY
 	RETURN l_con.res
 END FUNCTION
 ----------------------------------------------------------------------------------------------------
-FUNCTION get_Resources( l_dbn STRING, l_res STRING )
+FUNCTION get_User( l_con t_con ) RETURNS STRING
+	DEFINE l_usr, l_sql STRING
+	CASE l_con.drv.subString(4,6)
+		WHEN "ifx" LET l_sql = "SELECT USER FROM systables WHERE tabname = 'systables'"
+		OTHERWISE LET l_sql = "SELECT USER"
+	END CASE
+	TRY
+		PREPARE l_pre FROM l_sql
+	CATCH
+		RETURN SFMT("Prepare '%1' Failed:\n%2:%3", l_sql, STATUS, SQLERRMESSAGE )
+	END TRY
+	TRY
+		EXECUTE l_pre INTO l_usr
+	CATCH
+		RETURN SFMT("Execute '%1' Failed:\n%2:%3", l_sql, STATUS, SQLERRMESSAGE )
+	END TRY
+	RETURN SFMT("User = '%1'", l_usr)
+END FUNCTION
+----------------------------------------------------------------------------------------------------
+FUNCTION get_Resources( l_dbn STRING, l_res STRING ) RETURNS STRING
 	DEFINE l_ret, l_line STRING
 	DEFINE c base.Channel
 	LET l_ret = "\n\nfglprofile resources:"
