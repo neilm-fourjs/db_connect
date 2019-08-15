@@ -1,0 +1,33 @@
+
+ACTION DEFAULTS
+	ACTION test1 (TEXT="DATABASE")
+	ACTION test2 (TEXT="CONNECT TO")
+END -- AD
+
+LAYOUT (TEXT="DB Connection Test")
+GRID
+{
+Connection: [con                                                                                    ]
+DB Name:    [f001                                   ]
+Source:     [f002                                   ]
+Driver:     [f003           ]
+Username:   [f004                ]
+Password:   [f005                ]
+Result:
+[res                                                                                                ]
+[                                                                                                   ]
+[                                                                                                   ]
+[                                                                                                   ]
+[                                                                                                   ]
+}
+END -- GRID
+
+ATTRIBUTES
+con = FORMONLY.con, NOENTRY;
+f001 = FORMONLY.dbn;
+f002 = FORMONLY.src;
+COMBOBOX f003 = FORMONLY.drv, INITIALIZER=cb_driver;
+f004 = FORMONLY.usr;
+f005 = FORMONLY.psw;
+TEXTEDIT res = FORMONLY.res, STRETCH=BOTH, NOENTRY;
+
