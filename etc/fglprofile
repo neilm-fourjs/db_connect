@@ -1,0 +1,9 @@
+
+# An Example FGLPROFILE for DB
+dbi.default.driver = "dbmifx"
+
+dbi.database.testsqt.dbdriver = "dbmsqt"
+
+dbi.database.testpgs.dbdriver = "dbmpgs"
+
+dbi.database.njm_demo310.ifxemul.datatype.serial.emulation = "native"
